@@ -4,9 +4,9 @@ from glob import glob
 
 #############################################################################################
 #                                                                                           #
-#   use: python yara_check.py [yara rule file] [dir path]                                   #
+#   use: python yara_check.py  [dir path]                                                   #
 #                                                                                           #
-#       python yara_check.py marewale.yara 'c:\marwale_analys\'                             #
+#       python yara_check.py  'c:\marwale_analys\'                                          #
 #                                                                                           #
 #                                                                                           #
 #############################################################################################
