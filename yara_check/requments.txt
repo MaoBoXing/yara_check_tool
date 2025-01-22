@@ -1,2 +1,2 @@
-python-yara
+yara-python
 shutil

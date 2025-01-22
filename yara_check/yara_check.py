@@ -1,4 +1,5 @@
 import yara,sys,os,shutil
+from tqdm import tqdm
 from glob import glob
 
 #############################################################################################
@@ -14,27 +15,35 @@ class yara_check():
     def __init__(self):
         try:
 
-            self.yara_rule = ".\\yara_rules\\"+sys.argv[1]
-            self.yara_check_path = sys.argv[2]
+            self.yara_rule = ".\\yara_rules\\"
+            self.yara_check_path = sys.argv[1]
             self.type_path = []
+            self.rules_path = []
+            # self.get_yara_path()
             self.main()
 
         except Exception as e:
             print(e)
         
-    def get_dir_path(self):
+    def get_dir_path(self,yara_rule_file_path):
         try:
             for root,_,files in os.walk(self.yara_check_path):
                 for file in files:
                     file_path = os.path.join(root,file)
-                    self.check(file_path)
+                    self.check(file_path,yara_rule_file_path)
         except Exception as e:
             print(e)
 
+    def get_yara_path(self):
+        for root,_,rules in os.walk(self.yara_rule):
+            for rule in rules:
+                file_path = os.path.join(root,rule)
+                self.rules_path.append(file_path)
+                # print(file_path)
 
-    def check(self,check_file_path):
+    def check(self,check_file_path,yara_rule_file_path):
         try:
-            rules  = yara.compile(filepath=self.yara_rule)
+            rules  = yara.compile(filepath=yara_rule_file_path)
             with open(check_file_path,"rb") as f:
                 matches =  rules.match(data = f.read())
             if matches:
@@ -45,7 +54,7 @@ class yara_check():
     
     def movfile(self,src_file_path,dst_file_path):
         if not os.path.isfile(src_file_path):
-            print("%s not exist",(src_file_path))
+            print("文件不存在",(src_file_path))
         else:
             fpath,fname = os.path.split(src_file_path)
             if not os.path.exists(dst_file_path):
@@ -58,12 +67,14 @@ class yara_check():
 
 
     def main(self):    
-        self.get_dir_path()
-        for file in self.type_path:
-            print(file)
-            self.movfile(file[1],file[0])
-            # self.movfile(file)
-            # print(self.type_path)
+        self.get_yara_path()
+        test = tqdm(self.rules_path,ncols=100)
+        for rule in test:
+            self.get_dir_path(rule)
+            for file in self.type_path:
+                self.movfile(file[1],file[0])
+                # self.movfile(file)
+                # print(self.type_path)
 if __name__=="__main__":
     get_yara = yara_check()
 
